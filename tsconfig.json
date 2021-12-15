@@ -6,6 +6,6 @@
     "isolatedModules": true,
     "strict": true,
   },
-	"typeRoots": ["./types"]
+	"typeRoots": ["./src/types"]
 
 }

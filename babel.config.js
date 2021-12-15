@@ -1,13 +1,17 @@
-export default (api) => {
-  api.cache(true);
+module.exports = ({ cache }) => {
+  cache(true);
   return {
     presets: ['babel-preset-expo'],
     plugins: [
       [
         'module:react-native-dotenv',
         {
-          moduleName: '@env',
+          moduleName: 'react-native-dotenv',
           path: '.env',
+          blacklist: null,
+          whitelist: null,
+          safe: true,
+          allowUndefined: true,
         },
       ],
     ],
