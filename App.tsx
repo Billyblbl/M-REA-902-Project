@@ -1,16 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {
-  StyleSheet, View, Image, Text, Button, TextInput,
+  StyleSheet, View, Image, Text, Button,
 } from 'react-native';
-
-// import FileSystem from 'react-native-filesystem';
 
 import * as DB from 'firebase/database';
 import * as Auth from 'firebase/auth';
 import * as Storage from 'firebase/storage';
-import Ressources from './rsrc';
-import firebaseInstance from './src/firebase';
+import FirebaseInstance from './src/FirebaseInstance';
+import UserAccountForm from './src/UserAccountForm';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,122 +21,54 @@ const styles = StyleSheet.create({
     margin: '20dp',
     padding: '20dp',
   },
+  testImage: {
+    width: 100,
+    height: 100,
+  },
 });
-
-// let onValueInit = false;
-
-// const ref = Storage.ref(firebaseInstance.storage, 'images/img.png');
-
-/*
-import React, { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
-
-const PizzaTranslator = () => {
-  const [text, setText] = useState('');
-  return (
-    <View style={{padding: 10}}>
-      <TextInput
-        style={{height: 40}}
-        placeholder="Type here to translate!"
-        onChangeText={text => setText(text)}
-        defaultValue={text}
-      />
-      <Text style={{padding: 10, fontSize: 42}}>
-        {text.split(' ').map((word) => word && '🍕').join(' ')}
-      </Text>
-    </View>
-  );
-  secureTextEntry={true}
-}
-
-export default PizzaTranslator;
-*/
 
 export default function App() {
   const [user, setUser] = React.useState<Auth.User | null>(null);
   const [imageURL, setImageURL] = React.useState<string | null>(null);
 
-  const UserCreationForm = () => {
-    const [email, setEmail] = React.useState<string | null>(null);
-    const [password, setPassword] = React.useState<string | null>(null);
-
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInputs}
-          placeholder="your@email.here"
-          onChangeText={(text) => setEmail(text)}
-          defaultValue={email ?? ''}
-        />
-        <TextInput
-          style={styles.textInputs}
-          placeholder="********************"
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-        />
-        <Button
-          onPress={async () => {
-            if (password != null && email != null) {
-              setUser((await Auth.createUserWithEmailAndPassword(firebaseInstance.auth, email, password)).user);
-            }
-          }}
-          title="Create account"
-          disabled={password == null || email == null}
-        />
-      </View>
-    );
-  };
-
-  // user creation & sign in might be similar enough that we could fuse them into one
-  const UserSignInForm = () => {
-    const [email, setEmail] = React.useState<string | null>(null);
-    const [password, setPassword] = React.useState<string | null>(null);
-
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.textInputs}
-          placeholder="your@email.here"
-          onChangeText={(text) => setEmail(text)}
-          defaultValue={email ?? ''}
-        />
-        <TextInput
-          style={styles.textInputs}
-          placeholder="********************"
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-        />
-        <Button
-          onPress={async () => {
-            if (password != null && email != null) {
-              setUser((await Auth.signInWithEmailAndPassword(firebaseInstance.auth, email, password)).user);
-            }
-          }}
-          title="Sign in"
-          disabled={password == null || email == null}
-        />
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
-      <Image source={imageURL ?? Ressources.images.placeholder} />
+      <Image source={{ uri: imageURL ?? 'https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg' }} style={styles.testImage} />
       <Text>test content</Text>
       <Button
         onPress={() => {
-          const userWriteRef = DB.ref(firebaseInstance.db, `users/${user?.uid}`);
+          const userWriteRef = DB.ref(FirebaseInstance.db, `users/${user?.uid}`);
           DB.set(userWriteRef, { someTestData: Math.random().toString() });
         }}
         title="user test"
       />
 
-      <UserCreationForm />
-      <UserSignInForm />
+      <UserAccountForm
+        actionText="Create account"
+        action={async (email : string, passwd : string) => {
+          setUser((
+            await Auth.createUserWithEmailAndPassword(
+              FirebaseInstance.auth,
+              email,
+              passwd,
+            )).user);
+        }}
+      />
+
+      <UserAccountForm
+        actionText="Sign in"
+        action={async (email : string, passwd : string) => {
+          setUser((await Auth.signInWithEmailAndPassword(
+            FirebaseInstance.auth,
+            email,
+            passwd,
+          )).user);
+        }}
+      />
 
       <Button
         onPress={async () => {
-          Auth.signOut(firebaseInstance.auth);
+          Auth.signOut(FirebaseInstance.auth);
           setUser(null);
         }}
         title="Sign out user"
@@ -163,8 +93,8 @@ export default function App() {
       <Button
         onPress={async () => {
           // console.log('Getting image URL');
-          const url = await Storage.getDownloadURL(Storage.ref(firebaseInstance.storage, 'cat.png'));
-          // console.log(`image URL got : ${url}`);
+          const url = await Storage.getDownloadURL(Storage.ref(FirebaseInstance.storage, 'cat.png'));
+          console.log(`image URL got : ${url}`);
           setImageURL(url);
         }}
         title="Update Image"
