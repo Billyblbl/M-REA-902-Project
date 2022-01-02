@@ -57,6 +57,7 @@ function Auth() {
         placeholder="Mot de passe"
         onChangeText={(text) => setPassword(text)}
         style={styles.input}
+        secureTextEntry
       />
       <View style={styles.buttonContainer}>
         <StylizedButton
