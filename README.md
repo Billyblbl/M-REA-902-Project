@@ -14,3 +14,5 @@ Prérequis :
 2. Ouvrez le repository depuis un terminal et installez les paquets via votre manager de paquets: yarn / npm install.
 3. Tapez expo start pour lancer le projet.
 4. Scannez le QR code qui se trouve normalement sur votre terminal avec l'application expo go. 
+
+Pour acceder en ligne au projet vous pouvez vous rendre sur le lien https://expo.dev/@roipeche/MyTumblr
