@@ -16,3 +16,4 @@ web-build/
 # Custom
 # firebaseConfig.js
 .env
+.vscode

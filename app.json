@@ -1,8 +1,12 @@
 {
   "expo": {
-    "name": "AwesomeProject",
-    "slug": "AwesomeProject",
+    "name": "MyTumblr",
+    "description": "Projet scolaire dans le cadre du module M-REA-902 à EPITECH",
+    "slug": "MyTumblr",
+    "owner": "roipeche",
+    "privacy": "unlisted",
     "version": "1.0.0",
+    "githubUrl": "https://github.com/Billyblbl/M-REA-902-Project",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -27,6 +31,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "We need to access to your photos for sharing purposes !",
+          "cameraPermission": "We need to access to your camera for sharing purposes !"
+        }
+      ]
+    ]
   }
 }

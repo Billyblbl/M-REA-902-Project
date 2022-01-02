@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, TextInput } from 'react-native';
 import { userStore } from './global-state/stores';
-import { User , createUser} from './types/user';
+import { createUser } from './types/user';
 
 export default function UserAccountForm({ actionText, action } : {
   actionText : string,
@@ -9,14 +9,14 @@ export default function UserAccountForm({ actionText, action } : {
 }) {
   const [email, setEmail] = React.useState<string | null>(null);
   const [password, setPassword] = React.useState<string | null>(null);
-  const user = createUser()
+  const user = createUser();
 
-  user.username = "Alexandre le BG"
-  user.email = "alexandre@bg.com"
-  user.id = "Q4LOQ0c518gTH4KCNwcFeSX4ReR2"
+  user.username = 'Alexandre le BG';
+  user.email = 'alexandre@bg.com';
+  user.id = 'Q4LOQ0c518gTH4KCNwcFeSX4ReR2';
 
-  userStore.dispatch({type: "user", payload: user});
-  console.log("fdsfdsjkgfdsgfdgfdkgjdfkgjkfdgjdfkgjfdklgjfslgkfgjls", userStore.getState());
+  userStore.dispatch({ type: 'user', payload: user });
+  console.log('fdsfdsjkgfdsgfdgfdkgjdfkgjkfdgjdfkgjfdklgjfslgkfgjls', userStore.getState());
   return (
     <View>
       <TextInput
