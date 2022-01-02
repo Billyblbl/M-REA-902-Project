@@ -79,7 +79,7 @@ function Profil() {
         }}
         title="Déconnexion"
       />
-      <Gallery data={placeholderGallery} onItemClick={() => { console.log('nothing for now'); }} />
+      <Gallery data={placeholderGallery} onItemClick={undefined} />
     </View>
   );
 }

@@ -13,37 +13,13 @@ import FirebaseInstance from '../FirebaseInstance';
 import { User } from '../types/user';
 import StylizedButton from '../components/StylizedButton';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  input: {
-    width: '90%',
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
-  },
-  button: {
-    backgroundColor: '#303030',
-    padding: 15,
-    width: '48%',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
-  },
-  textButton: {
-    marginTop: '20%',
-  },
-  buttonText: {
-    color: '#fff',
-  },
-});
-
 type Props = BottomTabNavigationProp<NavigationParams, 'Photo'>
+
+const styles = StyleSheet.create({
+  previewPicture: { width: '100%', flex: 2 },
+  buttonContainer: { flexDirection: 'row', padding: 10, justifyContent: 'center' },
+  takePictureButton: { marginRight: 15 },
+});
 
 function Photo() {
   const [camPermStatus, camPermRequestPermission] = ImagePicker.useCameraPermissions();
@@ -72,11 +48,11 @@ function Photo() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Image source={{ uri: previewPicture?.uri }} style={{ width: '100%', flex: 2 }} />
-      <View style={{ flexDirection: 'row', padding: 10, justifyContent: 'center' }}>
+      <Image source={{ uri: previewPicture?.uri }} style={styles.previewPicture} />
+      <View style={styles.buttonContainer}>
         <StylizedButton
           onPress={() => { takePicture(); }}
-          style={{ marginRight: 15 }}
+          style={styles.takePictureButton}
           title="Take picture"
         />
         <StylizedButton
@@ -87,7 +63,6 @@ function Photo() {
             setPreviewPicture(undefined);
             const path = await FirebaseInstance.uploadFileToPath(previewPicture?.uri ?? '', `images/${uuid.v4().toString()}`);
             await FirebaseInstance.addFileToUser(user.id, path);
-            console.info(`The picture should be sent to ${path}`);
             navigation.goBack();
           }}
         />

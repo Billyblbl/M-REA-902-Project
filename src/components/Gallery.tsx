@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  FlatList, Image, TouchableOpacity,
+  FlatList, Image, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,16 +11,22 @@ type Props = {
     onItemClick?: (it: DataItem) => void
 }
 
+const styles = StyleSheet.create({
+  list: { width: '100%', height: '100%', paddingHorizontal: 10 },
+  listItemContainer: { marginVertical: 10 },
+  listItemPicture: { height: undefined, width: '100%', aspectRatio: 135 / 76 },
+});
+
 function Gallery({ data, onItemClick }: Props) {
   return (
     <SafeAreaView>
       <FlatList
-        style={{ width: '100%', height: '100%', paddingHorizontal: 10 }}
+        style={styles.list}
         data={data}
         keyExtractor={(item, index) => `${index}`}
         renderItem={({ item }) => (
-          <TouchableOpacity style={{ marginVertical: 10 }} onPress={() => onItemClick?.(item)}>
-            <Image source={{ uri: item.pictureURI }} resizeMode="contain" style={{ height: undefined, width: '100%', aspectRatio: 135 / 76 }} />
+          <TouchableOpacity style={styles.listItemContainer} onPress={() => onItemClick?.(item)}>
+            <Image source={{ uri: item.pictureURI }} resizeMode="contain" style={styles.listItemPicture} />
           </TouchableOpacity>
         )}
       />

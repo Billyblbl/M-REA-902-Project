@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { Provider, useStore } from 'react-redux';
+import { Image, ImageSourcePropType } from 'react-native';
 import userStore from './src/global-state/stores';
 import Auth from './src/pages/Auth';
 import Home from './src/pages/Home';
@@ -10,30 +11,64 @@ import { NavigationParams, RootNavigationParams } from './src/pages/NavigationPa
 import Photo from './src/pages/Photo';
 import Profil from './src/pages/Profil';
 import { User } from './src/types/user';
+import HomeIc from './assets/home_focused.png';
+import PhotoIc from './assets/photo.png';
+import ProfileIc from './assets/account.png';
 
 const bottomNav = createBottomTabNavigator<NavigationParams>();
 const root = createNativeStackNavigator <RootNavigationParams>();
 
-function authRedirection(e: any, navigation: any, isAuth : boolean) {
+interface UnknownNavigation {
+  navigate(dest: string): void
+}
+
+function authRedirection(navigation: UnknownNavigation, isAuth : boolean) {
   if (!isAuth) { navigation.navigate('Auth'); }
+}
+
+function getTabBarIcon(focused: boolean, color: string, size: number, icon: ImageSourcePropType) {
+  return (
+    <Image
+      source={{ uri: Image.resolveAssetSource(icon).uri }}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size,
+        tintColor: color,
+      }}
+    />
+  );
 }
 
 function BottomNav() {
   const store = useStore<{value: User}>();
   return (
     <bottomNav.Navigator initialRouteName="Home">
-      <bottomNav.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <bottomNav.Screen
+        name="Home"
+        component={Home}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => getTabBarIcon(focused, color, size, HomeIc),
+        }}
+      />
       <bottomNav.Screen
         name="Photo"
         component={Photo}
-        options={{ headerShown: false }}
-        listeners={({ navigation }) => ({ focus: (e) => authRedirection(e, navigation, store.getState().value.id !== '') })}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => getTabBarIcon(focused, color, size, PhotoIc),
+        }}
+        listeners={({ navigation }) => ({ focus: () => authRedirection(navigation, store.getState().value.id !== '') })}
       />
       <bottomNav.Screen
         name="Profil"
         component={Profil}
-        options={{ headerShown: false }}
-        listeners={({ navigation }) => ({ focus: (e) => authRedirection(e, navigation, store.getState().value.id !== '') })}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => getTabBarIcon(focused, color, size, ProfileIc),
+        }}
+        listeners={({ navigation }) => ({ focus: () => authRedirection(navigation, store.getState().value.id !== '') })}
       />
       <bottomNav.Screen name="Auth" component={Auth} options={{ tabBarButton: () => null, tabBarLabel: undefined, headerShown: false }} />
     </bottomNav.Navigator>
@@ -45,7 +80,7 @@ export default function App() {
     <Provider store={userStore}>
       <NavigationContainer>
         <root.Navigator>
-          <root.Screen name="BottomNav" component={BottomNav} />
+          <root.Screen name="BottomNav" component={BottomNav} options={{ title: 'My Tumblr' }} />
         </root.Navigator>
       </NavigationContainer>
     </Provider>
