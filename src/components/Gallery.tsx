@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type DataItem = { pictureURI: string }
+type DataItem = { pictureURI: string, picturePath?: string }
 
 type Props = {
     data: DataItem[],
@@ -12,7 +12,7 @@ type Props = {
 }
 
 const styles = StyleSheet.create({
-  list: { width: '100%', height: '100%', paddingHorizontal: 10 },
+  list: { width: '100%', paddingHorizontal: 10 },
   listItemContainer: { marginVertical: 10 },
   listItemPicture: { height: undefined, width: '100%', aspectRatio: 135 / 76 },
 });
@@ -23,7 +23,7 @@ function Gallery({ data, onItemClick }: Props) {
       <FlatList
         style={styles.list}
         data={data}
-        keyExtractor={(item, index) => `${index}`}
+        keyExtractor={(item) => item.pictureURI}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listItemContainer} onPress={() => onItemClick?.(item)}>
             <Image source={{ uri: item.pictureURI }} resizeMode="contain" style={styles.listItemPicture} />

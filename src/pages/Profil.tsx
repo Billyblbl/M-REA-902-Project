@@ -7,22 +7,12 @@ import {
   View, Text, StyleSheet, Image,
 } from 'react-native';
 import { useStore } from 'react-redux';
-import Gallery from '../components/Gallery';
+import Gallery, { DataItem } from '../components/Gallery';
 import StylizedButton from '../components/StylizedButton';
 import { createUser, User } from '../types/user';
 import { NavigationParams } from './NavigationParams';
 import FirebaseInstance from '../FirebaseInstance';
-
-const placeholderGallery = [
-  { user: { email: 'pap', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pytp', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pop', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pap', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pytp', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pop', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pap', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-  { user: { email: 'pytp', profilePictureURI: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg' }, pictureURI: 'https://www.grenier-alpin.com/blog/wp-content/uploads/2017/05/parapente-montagne.jpg' },
-];
+import ProfileIc from '../../assets/account.png';
 
 const styles = StyleSheet.create({
   container: {
@@ -50,6 +40,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const defaultProfilePicture = Image.resolveAssetSource(ProfileIc).uri;
+
 type Props = BottomTabNavigationProp<NavigationParams, 'Profil'>
 
 function Profil() {
@@ -61,11 +53,14 @@ function Profil() {
     setUser(store.getState().value);
   });
 
+  const galleryDataset = user.imgs.urls.map((it): DataItem => (
+    { pictureURI: it.url, picturePath: it.path }));
+
   return (
     <View style={styles.container}>
       <View style={styles.imgContainer}>
         <Image
-          source={{ uri: 'https://media.discordapp.net/attachments/243832219947368448/926989176879054888/20220102_010400.jpg?width=682&height=910' }}
+          source={{ uri: user.imgs.profileUrl?.url ?? defaultProfilePicture }}
           style={styles.img}
         />
       </View>
@@ -79,7 +74,15 @@ function Profil() {
         }}
         title="Déconnexion"
       />
-      <Gallery data={placeholderGallery} onItemClick={undefined} />
+      <View style={{ flex: 3 }}>
+
+        <Gallery
+          data={galleryDataset}
+          onItemClick={(it) => {
+            FirebaseInstance.addProfileImage(user.id, it.picturePath ?? '');
+          }}
+        />
+      </View>
     </View>
   );
 }

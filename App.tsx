@@ -1,9 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { onValue, ref } from 'firebase/database';
 import React from 'react';
 import { Provider, useStore } from 'react-redux';
 import { Image, ImageSourcePropType } from 'react-native';
+import FirebaseInstance from './src/FirebaseInstance';
 import userStore from './src/global-state/stores';
 import Auth from './src/pages/Auth';
 import Home from './src/pages/Home';
@@ -42,6 +44,11 @@ function getTabBarIcon(focused: boolean, color: string, size: number, icon: Imag
 
 function BottomNav() {
   const store = useStore<{value: User}>();
+
+  const user = store.getState().value;
+  const userRef = ref(FirebaseInstance.db, `users/${user.id}`);
+  onValue(userRef, async (snapshot) => store.dispatch({ type: 'user/imgs', payload: await FirebaseInstance.onUserValueChange(snapshot) }));
+
   return (
     <bottomNav.Navigator initialRouteName="Home">
       <bottomNav.Screen

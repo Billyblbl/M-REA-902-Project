@@ -20,6 +20,8 @@ import {
   FIREBASE_APP_ID,
   FIREBASE_MEASUREMENT_ID,
 } from 'react-native-dotenv';
+import { ref } from 'firebase/storage';
+import { UserImgData } from './types/user';
 
 const FirebaseConfig = {
   apiKey: FIREBASE_API_KEY,
@@ -74,20 +76,40 @@ const uploadFileToPath = async (
 
 const addFileToUser = async (userId : string, path : string) => {
   // Why we don't use a list : https://stackoverflow.com/questions/39815117/add-an-item-to-a-list-in-firebase-database
-  console.log(userId);
-  const writeRef = DB.ref(db, `users/${userId}/files/${path}`);
-  await DB.set(writeRef, { createdAt: new Date() });
+  const writeRef = DB.ref(db, `users/${userId}/files`);
+  await DB.push(writeRef, path);
 };
 
 const addProfileImage = async (userId : string, path : string) => {
   const writeRef = DB.ref(db, `users/${userId}/profileImg`);
-  await DB.set(writeRef, { path });
+  await DB.set(writeRef, path);
 };
 
 const getAllImagesUrls = async () => {
   const imagesFolderRef = Storage.ref(storage, 'images/');
   const content = await Storage.listAll(imagesFolderRef);
   return Promise.all(content.items.map((imageRef) => Storage.getDownloadURL(imageRef)));
+};
+
+const onUserValueChange = async (snapshot : DB.DataSnapshot) : Promise<UserImgData> => {
+  const data = snapshot.val();
+  const getFiles = () => Promise.all(
+    Object
+      .entries(data.files)
+      .map(async ([, value]) => ({
+        url: await Storage.getDownloadURL(ref(storage, value as string)),
+        path: value as string,
+      })),
+  );
+  const getProfileUrl = async () => ({
+    url: await Storage.getDownloadURL(ref(storage, data.profileImg)),
+    path: data.profileImg,
+  });
+
+  return {
+    urls: (data?.files !== null) ? await getFiles() : [],
+    profileUrl: (data?.profileImg) ? await getProfileUrl() : null,
+  };
 };
 
 export default {
@@ -104,4 +126,6 @@ export default {
   addFileToUser,
   addProfileImage,
   getAllImagesUrls,
+
+  onUserValueChange,
 };

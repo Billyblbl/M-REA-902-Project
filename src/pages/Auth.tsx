@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import React from 'react';
 import {
-  View, TextInput, StyleSheet, TouchableOpacity, Text,
+  View, TextInput, StyleSheet, TouchableOpacity, Text, Alert,
 } from 'react-native';
 import { useStore } from 'react-redux';
 import StylizedButton from '../components/StylizedButton';
@@ -70,9 +70,8 @@ function Auth() {
               )).user.uid;
               user.email = email;
               store.dispatch({ type: 'user/set', payload: user });
-              console.log('signed into account');
             } catch (error) {
-              alert(error);
+              Alert.alert((error as Error).message);
             }
             navigation.goBack();
           }}
@@ -89,9 +88,8 @@ function Auth() {
               )).user.uid;
               user.email = email;
               store.dispatch({ type: 'user/set', payload: user });
-              console.log('created account');
             } catch (error) {
-              alert(error);
+              Alert.alert((error as Error).message);
             }
             navigation.goBack();
           }}
